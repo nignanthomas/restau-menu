@@ -4,66 +4,113 @@ import './App.css';
 import Counters from './components/counters';
 
 
-class App extends Component {
-  state = {
-    counters: [
-      { id: 1, value: 4 },
-      { id: 2, value: 0 },
-      { id: 3, value: 2 },
-      { id: 4, value: 0 }
+var json = [{
+    name: 'Salad',
+    choices: [{
+        name: 'Santa Fe'
+      },
+      {
+        name: 'Greek'
+      },
+      {
+        name: 'Asian'
+      },
+    ],
+    related: [{
+        name: 'Dressing',
+        choices: [{
+            name: 'Italian'
+          },
+          {
+            name: 'Blue Cheese'
+          },
+          {
+            name: 'Ranch'
+          },
+        ]
+      },
+      {
+        name: 'Bread',
+        choices: [{
+            name: 'Italian'
+          },
+          {
+            name: 'Flat'
+          },
+          {
+            name: 'Sourdough'
+          },
+        ]
+      }
     ]
-  };
+  },
+  {
+    name: 'Entree',
+    choices: [{
+        name: 'Steak'
+      },
+      {
+        name: 'Salmon'
+      },
+      {
+        name: 'Rice'
+      },
+    ],
+    related: []
+  },
+  {
+    name: 'Soup',
+    choices: [{
+        name: 'Minestrone'
+      },
+      {
+        name: 'Hot and sour'
+      },
+      {
+        name: 'Miso'
+      },
+    ],
+    related: [{
+      name: 'Bread',
+      choices: [{
+        name: 'Breadsticks'
+      }]
+    }]
+  }
+];
 
+class App extends React.Component {
   constructor() {
-    super()
-    console.log('App - Consructor');
-    
-  }
-
-  componentDidMount() {
-    console.log('App -- Mounted');
+    super();
+    this.state = {  };
   }
 
 
 
-  handleIncrement = counter => {
-    const counters = [...this.state.counters];
-    const index = counters.indexOf(counter);
-    counters[index] = { ...counter };
-    counters[index].value++;
-    this.setState({ counters });
-  };
+  _createList(item, margin, uid){
+      return item.map((el,i)=>{
+          uid = uid * (i+1);
+          return	<div key={i} style={{marginLeft: margin}}>
+                     <input type='checkbox' data-toggle="collapse" data-target={"#" + uid} name={el.name} value={el.name}/>
+                      {el.name}
+                     <div id={uid} className="collapse">
+                         {el.choices && el.choices.length ? this._createList(el.choices, 10, Math.random().toFixed(6)*1000000) : null}
 
-  handleReset = () => {
-    const counters = this.state.counters.map(c => {
-      c.value = 0;
-      return c;
-    });
-    this.setState({ counters });
-  };
-
-  handleDelete = counterId => {
-    const counters = this.state.counters.filter(c => c.id !== counterId);
-    this.setState({ counters: counters });
-    // or we can simplify into this.setState({ counters }) coz key and value are the same
-  };
+                         {el.related && el.related.length ? <p>You might also want:</p> : null}
+                         {el.related && el.related.length ? this._createList(el.related, 10, Math.random().toFixed(6)*1000000) : null}
+                     </div>
+                 </div>
+      })
+  }
 
   render() {
-    console.log("App - Rendered");
-    
     return (
-      <React.Fragment>
-        <NavBar totalCounters={this.state.counters.filter(c => c.value > 0).length} />
-        <main className='container'>
-          <Counters 
-            counters={this.state.counters} 
-            onReset={this.handleReset} 
-            onIncrement={this.handleIncrement} 
-            onDelete={this.handleDelete} />
-        </main>
-        </React.Fragment>
-    );
+      <div>
+        {this._createList(json, 0, Math.random().toFixed(6)*1000000)}
+      </div>
+    )
   }
 }
+
 
 export default App;
